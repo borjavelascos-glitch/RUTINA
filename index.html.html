@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rutina Atlética 3 Días</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700;1,900&family=Barlow:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #07070c;
+    --surface: #0f0f18;
+    --card: #14141f;
+    --card-hi: #1a1a28;
+    --border: #25253a;
+    --border-hi: #34344f;
+    --text: #ededf4;
+    --muted: #8585a6;
+    --day1: #e5ff3d;
+    --day2: #2dd4ff;
+    --day3: #ff5277;
+    --core: #b58cff;
+    /* live accent, overridden per day */
+    --accent: #e5ff3d;
+    --accent-soft: rgba(229,255,61,0.12);
+    --accent2: #2dd4ff;
+    --accent3: #ff5277;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(45,212,255,0.06), transparent 60%),
+      radial-gradient(900px 500px at 0% 0%, rgba(229,255,61,0.05), transparent 55%),
+      var(--bg);
+    background-attachment: fixed;
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* per-day accent theming */
+  #day1 { --accent: var(--day1); --accent-soft: rgba(229,255,61,0.12); }
+  #day2 { --accent: var(--day2); --accent-soft: rgba(45,212,255,0.12); }
+  #day3 { --accent: var(--day3); --accent-soft: rgba(255,82,119,0.12); }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(180deg, rgba(20,20,32,0.95), rgba(10,10,18,0.9));
+    border-bottom: 1px solid var(--border);
+    padding: 22px 32px;
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    position: relative;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--day1), var(--day2) 50%, var(--day3));
+    opacity: 0.7;
+  }
+
+  .header-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .header-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 38px;
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+
+  .header-name span {
+    background: linear-gradient(90deg, var(--day1), var(--day2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .header-stats {
+    margin-left: auto;
+    display: flex;
+    gap: 14px;
+  }
+
+  .stat {
+    text-align: right;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    min-width: 78px;
+  }
+
+  .stat-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-top: 3px;
+  }
+
+  .stat-edit {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: flex-end;
+  }
+
+  .s-btn {
+    background: var(--card-hi);
+    border: 1px solid var(--border-hi);
+    color: var(--text);
+    font-size: 14px;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.15s;
+  }
+
+  .s-btn:hover { border-color: var(--day2); color: var(--day2); transform: translateY(-1px); }
+  .s-btn:active { transform: translateY(0); }
+
+  /* TAB NAV */
+  .tab-nav {
+    display: flex;
+    gap: 8px;
+    padding: 14px 32px 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 90;
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 12px 20px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.2s;
+  }
+
+  .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+
+  .tab-btn.active[data-day="1"] { color: var(--day1); border-bottom-color: var(--day1); background: rgba(229,255,61,0.06); }
+  .tab-btn.active[data-day="2"] { color: var(--day2); border-bottom-color: var(--day2); background: rgba(45,212,255,0.06); }
+  .tab-btn.active[data-day="3"] { color: var(--day3); border-bottom-color: var(--day3); background: rgba(255,82,119,0.06); }
+
+  /* MAIN CONTENT */
+  .main { padding: 32px; max-width: 1080px; margin: 0 auto; }
+
+  .day-panel { display: none; }
+  .day-panel.active { display: block; animation: fadeUp 0.4s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* DAY HEADER */
+  .day-header {
+    margin-bottom: 30px;
+    position: relative;
+    padding-left: 18px;
+  }
+  .day-header::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 4px; bottom: 4px;
+    width: 4px;
+    border-radius: 4px;
+    background: var(--accent);
+    box-shadow: 0 0 16px var(--accent);
+  }
+
+  .day-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .day-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 46px;
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .day-desc {
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 620px;
+    line-height: 1.65;
+  }
+
+  .focus-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .chip {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+
+  /* SECTION */
+  .section { margin-bottom: 34px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  /* EXERCISE CARD */
+  .exercise-grid { display: grid; gap: 10px; }
+
+  .ex-card {
+    background: linear-gradient(180deg, var(--card-hi), var(--card));
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--border-hi);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 14px;
+    align-items: center;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    cursor: pointer;
+  }
+
+  .ex-card:hover {
+    border-color: var(--border-hi);
+    border-left-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  .ex-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: 0.01em;
+  }
+
+  .ex-note {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.55;
+    max-width: 540px;
+  }
+
+  .ex-tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+
+  .ex-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+
+  .tag-power { background: rgba(229,255,61,0.12); color: var(--day1); }
+  .tag-hyp   { background: rgba(45,212,255,0.12); color: var(--day2); }
+  .tag-mob   { background: rgba(255,82,119,0.12); color: var(--day3); }
+  .tag-core  { background: rgba(181,140,255,0.14); color: var(--core); }
+
+  .ex-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    min-width: 200px;
+  }
+
+  .sets-reps {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+
+  .weight-control {
+    display: flex;
+    align-items: center;
+    background: var(--bg);
+    border: 1px solid var(--border-hi);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .w-btn {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 18px;
+    width: 38px;
+    height: 38px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .w-btn:hover { background: var(--accent-soft); color: var(--accent); }
+
+  .w-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    min-width: 70px;
+    text-align: center;
+    color: var(--accent);
+  }
+
+  .w-unit {
+    font-size: 11px;
+    color: var(--muted);
+    padding-right: 12px;
+  }
+
+  /* REST ROW */
+  .rest-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 6px;
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .rest-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--border-hi); }
+
+  /* TIMER */
+  .timer-bar {
+    background: linear-gradient(180deg, var(--card-hi), var(--card));
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .timer-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .timer-display {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--accent);
+    min-width: 92px;
+    text-shadow: 0 0 18px var(--accent-soft);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .timer-controls { display: flex; gap: 8px; margin-left: auto; }
+
+  .t-btn {
+    background: var(--card-hi);
+    border: 1px solid var(--border-hi);
+    color: var(--text);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 9px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .t-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .rest-presets { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .rest-preset {
+    background: var(--bg);
+    border: 1px solid var(--border-hi);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 7px 13px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .rest-preset:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+
+  /* PROGRESS */
+  .progress-bar-wrap {
+    background: linear-gradient(180deg, var(--card-hi), var(--card));
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 56px;
+    z-index: 80;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  }
+
+  .prog-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    min-width: 90px;
+  }
+
+  .prog-track {
+    flex: 1;
+    height: 6px;
+    background: var(--bg);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .prog-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent));
+    border-radius: 6px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    width: 0%;
+    box-shadow: 0 0 12px var(--accent-soft);
+  }
+
+  .prog-pct {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--accent);
+    min-width: 44px;
+    text-align: right;
+  }
+
+  /* MOBILITY ACCORDION */
+  .mob-card {
+    background: linear-gradient(180deg, var(--card-hi), var(--card));
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .mob-header {
+    padding: 15px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    user-select: none;
+    transition: background 0.15s;
+  }
+
+  .mob-header:hover { background: rgba(255,255,255,0.035); }
+
+  .mob-icon { font-size: 20px; }
+
+  .mob-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    flex: 1;
+  }
+
+  .mob-toggle { font-size: 16px; color: var(--muted); transition: transform 0.25s; }
+
+  .mob-body {
+    display: none;
+    padding: 0 20px 18px;
+    border-top: 1px solid var(--border);
+  }
+
+  .mob-body.open { display: block; animation: fadeUp 0.3s ease; }
+  .mob-toggle.open { transform: rotate(180deg); color: var(--accent); }
+
+  .mob-list { list-style: none; margin-top: 14px; display: grid; gap: 8px; }
+
+  .mob-list li {
+    font-size: 13px;
+    color: var(--muted);
+    padding-left: 18px;
+    position: relative;
+    line-height: 1.55;
+  }
+
+  .mob-list li::before {
+    content: '\2192';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* NOTES */
+  .notes-box {
+    background: linear-gradient(180deg, var(--card-hi), var(--card));
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+  }
+
+  .notes-textarea {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    resize: vertical;
+    min-height: 80px;
+    outline: none;
+    line-height: 1.65;
+  }
+
+  .notes-textarea::placeholder { color: var(--muted); }
+
+  /* RESPONSIVE */
+  @media (max-width: 760px) {
+    .header { flex-direction: column; align-items: flex-start; padding: 16px; }
+    .header-stats { margin-left: 0; flex-wrap: wrap; }
+    .tab-nav { top: 0; position: sticky; overflow-x: auto; padding: 12px 16px 0; }
+    .progress-bar-wrap { top: 52px; }
+    .main { padding: 18px 16px; }
+    .ex-card { grid-template-columns: 1fr; }
+    .ex-right { align-items: flex-start; flex-direction: row; flex-wrap: wrap; min-width: 0; }
+    .tab-btn { padding: 11px 14px; font-size: 13px; white-space: nowrap; }
+    .day-title { font-size: 36px; }
+    .timer-bar { flex-wrap: wrap; }
+    .timer-controls { margin-left: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="header-title">Plan de Entrenamiento Atlético</div>
+    <div class="header-name">3 DÍAS / <span>POTENCIA + MÚSCULO</span></div>
+  </div>
+  <div class="header-stats">
+    <div class="stat">
+      <div class="stat-edit">
+        <button class="s-btn" onclick="changeStat('weight',-1)">−</button>
+        <span class="stat-val" id="statWeight">80</span>
+        <button class="s-btn" onclick="changeStat('weight',1)">+</button>
+      </div>
+      <div class="stat-label">Peso (kg)</div>
+    </div>
+    <div class="stat">
+      <div class="stat-edit">
+        <button class="s-btn" onclick="changeStat('fat',-0.5)">−</button>
+        <span class="stat-val" id="statFat">10</span>
+        <button class="s-btn" onclick="changeStat('fat',0.5)">+</button>
+      </div>
+      <div class="stat-label">% Grasa</div>
+    </div>
+    <div class="stat">
+      <div class="stat-edit">
+        <button class="s-btn" onclick="changeStat('height',-1)">−</button>
+        <span class="stat-val" id="statHeight">184</span>
+        <button class="s-btn" onclick="changeStat('height',1)">+</button>
+      </div>
+      <div class="stat-label">Altura (cm)</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" id="statBmi" style="color:var(--accent2)">23.6</div>
+      <div class="stat-label" id="bmiLabel">IMC · Normal</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB NAV -->
+<div class="tab-nav">
+  <button class="tab-btn active" data-day="1" onclick="showDay(1)">Día 1 · Pierna + Potencia</button>
+  <button class="tab-btn" data-day="2" onclick="showDay(2)">Día 2 · Push + Core</button>
+  <button class="tab-btn" data-day="3" onclick="showDay(3)">Día 3 · Pull + Explosivo</button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TIMER -->
+  <div class="timer-bar">
+    <div>
+      <div class="timer-label">Descanso</div>
+      <div class="timer-display" id="timerDisplay">0:00</div>
+    </div>
+    <div class="rest-presets">
+      <button class="rest-preset" onclick="startTimer(60)">60s</button>
+      <button class="rest-preset" onclick="startTimer(90)">90s</button>
+      <button class="rest-preset" onclick="startTimer(120)">2 min</button>
+      <button class="rest-preset" onclick="startTimer(180)">3 min</button>
+    </div>
+    <div class="timer-controls">
+      <button class="t-btn" onclick="pauseTimer()">Pausa</button>
+      <button class="t-btn" onclick="resetTimer()">Reset</button>
+      <button class="t-btn reset-btn" onclick="resetState(this)" style="border-color:rgba(255,82,119,0.4)">↺ Completados</button>
+    </div>
+  </div>
+
+  <!-- DÍA 1: PIERNA + POTENCIA -->
+  <div class="day-panel active" id="day1">
+    <div class="day-header">
+      <div class="day-tag" style="color:var(--day1)">Día 1 · Lunes<span style="margin-left:10px;padding:3px 11px;border:1px solid var(--border-hi);border-radius:20px;color:var(--muted);font-size:11px;letter-spacing:0.1em;vertical-align:middle">⏱ ~75 MIN</span></div>
+      <div class="day-title">Pierna Atlética<br><span style="color:var(--day1)">+ Potencia</span></div>
+      <div class="day-desc">Base de todo el atletismo. Fuerza explosiva en cadena posterior y cuádriceps, más movilidad de cadera para proteger rodillas y mejorar sprint.</div>
+      <div class="focus-chips">
+        <div class="chip" style="border-color:var(--day1);color:var(--day1)">Potencia</div>
+        <div class="chip" style="border-color:var(--day2);color:var(--day2)">Hipertrofia</div>
+        <div class="chip" style="border-color:var(--day3);color:var(--day3)">Movilidad cadera</div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-bar-wrap">
+      <div class="prog-label">Completado</div>
+      <div class="prog-track"><div class="prog-fill" id="prog1"></div></div>
+      <div class="prog-pct" id="pct1">0%</div>
+    </div>
+
+    <!-- CARDIO WARMUP -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Calentamiento · Bici · 3 min</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="exercise-grid">
+        <div class="ex-card" data-min="3">
+          <div class="ex-left">
+            <div class="ex-name">Bicicleta (Cardio Suave)</div>
+            <div class="ex-note">3 min a ritmo suave-moderado para subir temperatura corporal y activar la circulación antes de la movilidad. No fuerces, es solo entrar en calor. Especialmente útil antes del trabajo explosivo y pesado de este día.</div>
+            <div class="ex-tags"><span class="ex-tag tag-mob">Calentamiento</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">3 min</div>
+            <div style="font-size:12px;color:var(--muted)">Ritmo suave</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOVILIDAD CADERA -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Bloque 0 · Movilidad de Cadera (Foco) · 12 min</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="exercise-grid">
+        <div class="ex-card" data-min="2">
+          <div class="ex-left">
+            <div class="ex-name">CARs de Cadera (Controlled Articular Rotations)</div>
+            <div class="ex-note">Círculos de cadera lentos y máximos, control activo total. La base de toda movilidad articular. Mové solo la cadera, el resto del cuerpo quieto.</div>
+            <div class="ex-tags"><span class="ex-tag tag-mob">Movilidad</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">2 × 5 c/lado</div>
+            <div style="font-size:12px;color:var(--muted)">Sin peso · Lento</div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Sin descanso, fluye<div class="rest-dot"></div></div>
+
+        <div class="ex-card" data-min="4">
+          <div class="ex-left">
+            <div class="ex-name">90/90 con Isométricos (PAILs/RAILs)</div>
+            <div class="ex-note">EL ejercicio que más mueve la aguja para tu rigidez. Entrá en rotación máxima, empujá contra el suelo 15–20 seg al ~60% de fuerza, relajá y ganá rango nuevo. Repetí.</div>
+            <div class="ex-tags"><span class="ex-tag tag-mob">Movilidad</span><span class="ex-tag tag-core">Isométrico</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">3 × 15–20 seg c/lado</div>
+            <div style="font-size:12px;color:var(--muted)">Sin peso</div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Descanso 30 seg<div class="rest-dot"></div></div>
+
+        <div class="ex-card" data-min="3">
+          <div class="ex-left">
+            <div class="ex-name">Cossack Squat</div>
+            <div class="ex-note">Fuerza en rango lateral extremo: mata dos pájaros (movilidad de cadera + fuerza unilateral). Talón apoyado, baja todo lo que puedas controlando. Empezá sin peso.</div>
+            <div class="ex-tags"><span class="ex-tag tag-mob">Movilidad</span><span class="ex-tag tag-power">Fuerza</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">2 × 6 c/lado</div>
+            <div class="weight-control">
+              <button class="w-btn" onclick="changeWeight(this,-2.5)">−</button>
+              <span class="w-val">0</span>
+              <button class="w-btn" onclick="changeWeight(this,2.5)">+</button>
+              <span class="w-unit">kg</span>
+            </div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Descanso 45 seg<div class="rest-dot"></div></div>
+
+        <div class="ex-card" data-min="2">
+          <div class="ex-left">
+            <div class="ex-name">Deep Squat Hold</div>
+            <div class="ex-note">Sentadilla profunda sostenida. Codos adentro de las rodillas, empujá hacia afuera para abrir cadera. Pecho arriba, espalda recta. Respirá hondo.</div>
+            <div class="ex-tags"><span class="ex-tag tag-mob">Movilidad</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">2 × 30–45 seg</div>
+            <div style="font-size:12px;color:var(--muted)">Sin peso</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVACIÓN -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Activación rápida · 4 min</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="mob-card">
+        <div class="mob-header" onclick="toggleMob(this)">
+          <span class="mob-icon">🔥</span>
+          <span class="mob-title">Activación pre-pierna</span>
+          <span class="mob-toggle">▾</span>
+        </div>
+        <div class="mob-body">
+          <ul class="mob-list">
+            <li>Leg swing frontal y lateral — 10 cada lado</li>
+            <li>Glute bridge con pausa arriba — 15 reps</li>
+            <li>Squat goblet con pausa abajo — 10 reps (sin peso)</li>
+            <li>Calf raise excéntrico lento — 10 reps</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- POTENCIA -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Bloque 1 · Potencia explosiva</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="exercise-grid">
+        <div class="ex-card" data-ex="1a" data-min="9">
+          <div class="ex-left">
+            <div class="ex-name">Box Jump</div>
+            <div class="ex-note">Máxima explosión en cada salto. Aterriza suave, baja caminando. Pausa 3 seg entre saltos.</div>
+            <div class="ex-tags"><span class="ex-tag tag-power">Potencia</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">4 series × 4 reps</div>
+            <div style="font-size:12px;color:var(--muted)">Sin peso · Caja 50–70 cm</div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Descanso 2 min<div class="rest-dot"></div></div>
+
+        <div class="ex-card" data-ex="1b" data-min="13">
+          <div class="ex-left">
+            <div class="ex-name">Sentadilla con Barra (Back Squat)</div>
+            <div class="ex-note">Fuerza base de pierna. Control en bajada 3 seg, explosión arriba. Profundidad paralelo o más.</div>
+            <div class="ex-tags"><span class="ex-tag tag-power">Potencia</span><span class="ex-tag tag-hyp">Hipertrofia</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">4 series × 5 reps</div>
+            <div class="weight-control">
+              <button class="w-btn" onclick="changeWeight(this,-5)">−</button>
+              <span class="w-val">80</span>
+              <button class="w-btn" onclick="changeWeight(this,5)">+</button>
+              <span class="w-unit">kg</span>
+            </div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Descanso 2–3 min<div class="rest-dot"></div></div>
+      </div>
+    </div>
+
+    <!-- HIPERTROFIA PIERNA -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Bloque 2 · Hipertrofia + Unilateral</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="exercise-grid">
+        <div class="ex-card" data-min="7">
+          <div class="ex-left">
+            <div class="ex-name">Romanian Deadlift (RDL)</div>
+            <div class="ex-note">Isquiotibiales y glúteos. Bisagra de cadera pura. Bajada controlada 3 seg. Espalda neutra siempre.</div>
+            <div class="ex-tags"><span class="ex-tag tag-hyp">Hipertrofia</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">3 × 8 reps</div>
+            <div class="weight-control">
+              <button class="w-btn" onclick="changeWeight(this,-5)">−</button>
+              <span class="w-val">70</span>
+              <button class="w-btn" onclick="changeWeight(this,5)">+</button>
+              <span class="w-unit">kg</span>
+            </div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Descanso 90 seg<div class="rest-dot"></div></div>
+
+        <div class="ex-card" data-min="8">
+          <div class="ex-left">
+            <div class="ex-name">Zancada búlgara (Bulgarian Split Squat)</div>
+            <div class="ex-note">Unilateral clave para fútbol. Equilibra desequilibrios lado a lado. Rodilla no pase la punta del pie.</div>
+            <div class="ex-tags"><span class="ex-tag tag-hyp">Hipertrofia</span><span class="ex-tag tag-power">Potencia</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">3 × 8 c/lado</div>
+            <div class="weight-control">
+              <button class="w-btn" onclick="changeWeight(this,-2.5)">−</button>
+              <span class="w-val">20</span>
+              <button class="w-btn" onclick="changeWeight(this,2.5)">+</button>
+              <span class="w-unit">kg</span>
+            </div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Descanso 90 seg<div class="rest-dot"></div></div>
+
+        <div class="rest-row" style="color:var(--day1);font-weight:800;letter-spacing:0.14em">⚡ SUPERSERIE A · Nordic + Copenhagen encadenados, sin descanso entre ellos</div>
+
+        <div class="ex-card" data-min="4">
+          <div class="ex-left">
+            <div class="ex-name">Nordic Hamstring Curl</div>
+            <div class="ex-note">EL ejercicio con más evidencia para prevenir lesiones de isquios, la lesión nº1 del fútbol. Va primero para hacerlo con los isquios frescos: el control de la bajada es de donde sale todo el beneficio. Baja lo más lento que puedas resistiendo, frená la caída con las manos. Si es muy duro, usa banda de asistencia.</div>
+            <div class="ex-tags"><span class="ex-tag tag-mob">Prevención</span><span class="ex-tag tag-power">Excéntrico</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">3 × 5 reps</div>
+            <div style="font-size:12px;color:var(--muted)">Peso corporal · Bajada lenta</div>
+          </div>
+        </div>
+
+        <div class="ex-card" data-min="3">
+          <div class="ex-left">
+            <div class="ex-name">Copenhagen Plank</div>
+            <div class="ex-note">Aductor + core lateral. Prevención de lesiones de ingle, típica en futbolistas. No compite con el Nordic (músculos distintos), por eso van en superserie. Mantén la posición firme, cadera arriba.</div>
+            <div class="ex-tags"><span class="ex-tag tag-core">Core</span><span class="ex-tag tag-mob">Prevención</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">3 × 20 seg c/lado</div>
+            <div style="font-size:12px;color:var(--muted)">Sin peso</div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Descanso 90 seg al terminar la ronda<div class="rest-dot"></div></div>
+
+        <div class="rest-row" style="color:var(--day1);font-weight:800;letter-spacing:0.14em">⚡ SUPERSERIE B · Gemelo + Tibial encadenados (antagonistas), sin descanso entre ellos</div>
+
+        <div class="ex-card" data-min="3">
+          <div class="ex-left">
+            <div class="ex-name">Calf Raise Excéntrico</div>
+            <div class="ex-note">3 seg subida, 5 seg bajada. Mejora aceleración y protege tendón de Aquiles.</div>
+            <div class="ex-tags"><span class="ex-tag tag-hyp">Hipertrofia</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">3 × 15 reps</div>
+            <div class="weight-control">
+              <button class="w-btn" onclick="changeWeight(this,-5)">−</button>
+              <span class="w-val">30</span>
+              <button class="w-btn" onclick="changeWeight(this,5)">+</button>
+              <span class="w-unit">kg</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ex-card" data-min="3">
+          <div class="ex-left">
+            <div class="ex-name">Elevación Tibial (Tibialis Raise)</div>
+            <div class="ex-note">El antagonista del gemelo, por eso va en superserie con él. Talones apoyados, sube las puntas de los pies hacia las espinillas con control. Clave para desaceleración, salud de tobillo y prevención de periostitis tibial. Apoya la espalda en la pared o usa máquina/disco. Rep altas, sin peso o ligero.</div>
+            <div class="ex-tags"><span class="ex-tag tag-mob">Prevención</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">3 × 18 reps</div>
+            <div class="weight-control">
+              <button class="w-btn" onclick="changeWeight(this,-2.5)">−</button>
+              <span class="w-val">10</span>
+              <button class="w-btn" onclick="changeWeight(this,2.5)">+</button>
+              <span class="w-unit">kg</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOVILIDAD FINAL -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Cierre · Movilidad + Elongación · 8 min</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="mob-card">
+        <div class="mob-header" onclick="toggleMob(this)">
+          <span class="mob-icon">🧘</span>
+          <span class="mob-title">Elongación Post-Sesión Día 1</span>
+          <span class="mob-toggle">▾</span>
+        </div>
+        <div class="mob-body">
+          <ul class="mob-list">
+            <li>Pigeon pose — 60 seg cada lado (cadera)</li>
+            <li>Estiramiento isquiotibial de pie con banda — 45 seg cada lado</li>
+            <li>Couch stretch (cuádriceps/flexor de cadera) — 60 seg cada lado</li>
+            <li>90/90 hip rotation — 10 transiciones lentas</li>
+            <li>Child's pose con apertura lateral — 45 seg</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTAS -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Notas de sesión</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="notes-box">
+        <textarea class="notes-textarea" placeholder="Anota cómo te sentiste, pesos usados, lo que quieres mejorar..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- DÍA 2: PUSH + CORE -->
+  <div class="day-panel" id="day2">
+    <div class="day-header">
+      <div class="day-tag" style="color:var(--day2)">Día 2 · Miércoles<span style="margin-left:10px;padding:3px 11px;border:1px solid var(--border-hi);border-radius:20px;color:var(--muted);font-size:11px;letter-spacing:0.1em;vertical-align:middle">⏱ ~60 MIN</span></div>
+      <div class="day-title">Push + Core<br><span style="color:var(--day2)">Atlético</span></div>
+      <div class="day-desc">Pecho, hombros y tríceps con énfasis en fuerza funcional. Core antirotacional que transfiere directo al remate y al cambio de dirección.</div>
+      <div class="focus-chips">
+        <div class="chip" style="border-color:var(--day2);color:var(--day2)">Push</div>
+        <div class="chip" style="border-color:var(--day3);color:var(--day3)">Core Funcional</div>
+        <div class="chip" style="border-color:var(--day1);color:var(--day1)">Explosivo</div>
+      </div>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="prog-label">Completado</div>
+      <div class="prog-track"><div class="prog-fill" id="prog2"></div></div>
+      <div class="prog-pct" id="pct2">0%</div>
+    </div>
+
+    <!-- CARDIO WARMUP -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Calentamiento · Bici · 3 min</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="exercise-grid">
+        <div class="ex-card" data-min="3">
+          <div class="ex-left">
+            <div class="ex-name">Bicicleta (Cardio Suave)</div>
+            <div class="ex-note">3 min a ritmo suave-moderado para subir temperatura corporal y activar la circulación antes de la activación. No fuerces, es solo entrar en calor.</div>
+            <div class="ex-tags"><span class="ex-tag tag-mob">Calentamiento</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">3 min</div>
+            <div style="font-size:12px;color:var(--muted)">Ritmo suave</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVACIÓN -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Activación + Movilidad · 7 min</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="mob-card">
+        <div class="mob-header" onclick="toggleMob(this)">
+          <span class="mob-icon">🔥</span>
+          <span class="mob-title">Activación Tren Superior</span>
+          <span class="mob-toggle">▾</span>
+        </div>
+        <div class="mob-body">
+          <ul class="mob-list">
+            <li>Rotación de hombros con banda elástica — 15 cada dirección</li>
+            <li>Band pull-apart — 20 reps (activa manguito rotador)</li>
+            <li>Dislocaciones de hombro con palo — 15 reps</li>
+            <li>Push-up explosivo (clap) — 3 × 5</li>
+            <li>Dead bug — 8 reps cada lado</li>
+            <li>Rotación torácica en cuadrupedia — 10 cada lado</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- POTENCIA PUSH -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Bloque 1 · Fuerza + Explosivo Push</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="exercise-grid">
+        <div class="ex-card" data-min="12">
+          <div class="ex-left">
+            <div class="ex-name">Press de Banca</div>
+            <div class="ex-note">Fuerza base pecho. Baja controlado 2 seg, empuja explosivo. Escápulas retraídas y deprimidas.</div>
+            <div class="ex-tags"><span class="ex-tag tag-power">Fuerza</span><span class="ex-tag tag-hyp">Hipertrofia</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">4 × 5 reps</div>
+            <div class="weight-control">
+              <button class="w-btn" onclick="changeWeight(this,-5)">−</button>
+              <span class="w-val">75</span>
+              <button class="w-btn" onclick="changeWeight(this,5)">+</button>
+              <span class="w-unit">kg</span>
+            </div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Descanso 2–3 min<div class="rest-dot"></div></div>
+
+        <div class="ex-card" data-min="10">
+          <div class="ex-left">
+            <div class="ex-name">Press Militar con Barra (OHP)</div>
+            <div class="ex-note">Hombros funcionales para cabeceo y disputa aérea. Core activo todo el tiempo. Sin hiperlordosis.</div>
+            <div class="ex-tags"><span class="ex-tag tag-power">Fuerza</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">4 × 6 reps</div>
+            <div class="weight-control">
+              <button class="w-btn" onclick="changeWeight(this,-5)">−</button>
+              <span class="w-val">50</span>
+              <button class="w-btn" onclick="changeWeight(this,5)">+</button>
+              <span class="w-unit">kg</span>
+            </div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Descanso 2 min<div class="rest-dot"></div></div>
+      </div>
+    </div>
+
+    <!-- HIPERTROFIA PUSH -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Bloque 2 · Hipertrofia Push</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="exercise-grid">
+        <div class="ex-card" data-min="7">
+          <div class="ex-left">
+            <div class="ex-name">Press Inclinado con Mancuernas</div>
+            <div class="ex-note">Pecho superior. Rango completo de movimiento. Estiramiento profundo abajo.</div>
+            <div class="ex-tags"><span class="ex-tag tag-hyp">Hipertrofia</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">3 × 10 reps</div>
+            <div class="weight-control">
+              <button class="w-btn" onclick="changeWeight(this,-2.5)">−</button>
+              <span class="w-val">24</span>
+              <button class="w-btn" onclick="changeWeight(this,2.5)">+</button>
+              <span class="w-unit">kg c/u</span>
+            </div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Descanso 90 seg<div class="rest-dot"></div></div>
+
+        <div class="ex-card" data-min="6">
+          <div class="ex-left">
+            <div class="ex-name">Tríceps Francés (Skull Crusher)</div>
+            <div class="ex-note">Cabeza larga del tríceps. Codos quietos apuntando al techo. Controla la bajada siempre.</div>
+            <div class="ex-tags"><span class="ex-tag tag-hyp">Hipertrofia</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">3 × 12 reps</div>
+            <div class="weight-control">
+              <button class="w-btn" onclick="changeWeight(this,-5)">−</button>
+              <span class="w-val">30</span>
+              <button class="w-btn" onclick="changeWeight(this,5)">+</button>
+              <span class="w-unit">kg</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CORE -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Bloque 3 · Core Funcional Atlético</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="exercise-grid">
+        <div class="ex-card" data-min="5">
+          <div class="ex-left">
+            <div class="ex-name">Pallof Press</div>
+            <div class="ex-note">Antirotación. Cable a altura de pecho. Mantén 2 seg extendido. Clave para estabilidad en duelo.</div>
+            <div class="ex-tags"><span class="ex-tag tag-core">Core</span><span class="ex-tag tag-power">Atlético</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">3 × 10 c/lado</div>
+            <div class="weight-control">
+              <button class="w-btn" onclick="changeWeight(this,-5)">−</button>
+              <span class="w-val">15</span>
+              <button class="w-btn" onclick="changeWeight(this,5)">+</button>
+              <span class="w-unit">kg</span>
+            </div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Descanso 60 seg<div class="rest-dot"></div></div>
+
+        <div class="ex-card" data-min="5">
+          <div class="ex-left">
+            <div class="ex-name">Ab Wheel / Rueda Abdominal</div>
+            <div class="ex-note">Antiextensión. Ve tan lejos como puedas sin que se curve la espalda. Vuelve lento.</div>
+            <div class="ex-tags"><span class="ex-tag tag-core">Core</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">3 × 8–10 reps</div>
+            <div style="font-size:12px;color:var(--muted)">Sin peso adicional</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOVILIDAD FINAL -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Cierre · Movilidad Torácica · 7 min</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="mob-card">
+        <div class="mob-header" onclick="toggleMob(this)">
+          <span class="mob-icon">🧘</span>
+          <span class="mob-title">Elongación Post-Sesión Día 2</span>
+          <span class="mob-toggle">▾</span>
+        </div>
+        <div class="mob-body">
+          <ul class="mob-list">
+            <li>Doorway chest stretch — 60 seg</li>
+            <li>Rotación torácica con foam roller — 10 reps cada lado</li>
+            <li>Child's pose con extensión de brazos — 45 seg</li>
+            <li>Estiramiento de tríceps sobre cabeza — 40 seg cada lado</li>
+            <li>Cross-body shoulder stretch — 45 seg cada lado</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Notas de sesión</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="notes-box">
+        <textarea class="notes-textarea" placeholder="Anota cómo te sentiste, pesos usados, lo que quieres mejorar..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- DÍA 3: PULL + EXPLOSIVO -->
+  <div class="day-panel" id="day3">
+    <div class="day-header">
+      <div class="day-tag" style="color:var(--day3)">Día 3 · Viernes<span style="margin-left:10px;padding:3px 11px;border:1px solid var(--border-hi);border-radius:20px;color:var(--muted);font-size:11px;letter-spacing:0.1em;vertical-align:middle">⏱ ~75 MIN</span></div>
+      <div class="day-title">Pull + Explosivo<br><span style="color:var(--day3)">Total Body</span></div>
+      <div class="day-desc">Espalda ancha y espesa, bíceps, y el bloque de potencia total body (Clean, Kettlebell swing) que más transfiere a aceleración y salto en cancha.</div>
+      <div class="focus-chips">
+        <div class="chip" style="border-color:var(--day3);color:var(--day3)">Pull</div>
+        <div class="chip" style="border-color:var(--day1);color:var(--day1)">Potencia Total</div>
+        <div class="chip" style="border-color:var(--day2);color:var(--day2)">Movilidad dorsal</div>
+      </div>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="prog-label">Completado</div>
+      <div class="prog-track"><div class="prog-fill" id="prog3"></div></div>
+      <div class="prog-pct" id="pct3">0%</div>
+    </div>
+
+    <!-- CARDIO WARMUP -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Calentamiento · Bici · 3 min</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="exercise-grid">
+        <div class="ex-card" data-min="3">
+          <div class="ex-left">
+            <div class="ex-name">Bicicleta (Cardio Suave)</div>
+            <div class="ex-note">3 min a ritmo suave-moderado para subir temperatura corporal y activar la circulación antes de la activación. No fuerces, es solo entrar en calor. Útil antes del trabajo explosivo de este día.</div>
+            <div class="ex-tags"><span class="ex-tag tag-mob">Calentamiento</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">3 min</div>
+            <div style="font-size:12px;color:var(--muted)">Ritmo suave</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVACIÓN -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Activación + Movilidad · 7 min</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="mob-card">
+        <div class="mob-header" onclick="toggleMob(this)">
+          <span class="mob-icon">🔥</span>
+          <span class="mob-title">Activación Espalda + Cadera</span>
+          <span class="mob-toggle">▾</span>
+        </div>
+        <div class="mob-body">
+          <ul class="mob-list">
+            <li>Band pull-apart sobre la cabeza — 15 reps</li>
+            <li>Cat-camel (columna) — 10 reps lentas</li>
+            <li>Face pull con banda — 20 reps</li>
+            <li>Dead hang en barra — 30 seg (descompresión + hombros)</li>
+            <li>Hip hinge sin peso con palo en espalda — 15 reps</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- POTENCIA TOTAL BODY -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Bloque 1 · Potencia Total Body</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="exercise-grid">
+        <div class="ex-card" data-min="13">
+          <div class="ex-left">
+            <div class="ex-name">Hang Power Clean</div>
+            <div class="ex-note">El ejercicio más atlético del programa. Extensión de cadera explosiva. Si no dominas, empieza ligero y súbele de a poco. Pausa 5 seg entre reps.</div>
+            <div class="ex-tags"><span class="ex-tag tag-power">Potencia</span><span class="ex-tag tag-power">Atlético</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">5 × 3 reps</div>
+            <div class="weight-control">
+              <button class="w-btn" onclick="changeWeight(this,-5)">−</button>
+              <span class="w-val">60</span>
+              <button class="w-btn" onclick="changeWeight(this,5)">+</button>
+              <span class="w-unit">kg</span>
+            </div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Descanso 2–3 min<div class="rest-dot"></div></div>
+
+        <div class="ex-card" data-min="8">
+          <div class="ex-left">
+            <div class="ex-name">Kettlebell Swing</div>
+            <div class="ex-note">Cadena posterior explosiva. Bisagra de cadera, NO sentadilla. Glúteo aprieta arriba. Excelente para sprint.</div>
+            <div class="ex-tags"><span class="ex-tag tag-power">Potencia</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">4 × 12 reps</div>
+            <div class="weight-control">
+              <button class="w-btn" onclick="changeWeight(this,-4)">−</button>
+              <span class="w-val">32</span>
+              <button class="w-btn" onclick="changeWeight(this,4)">+</button>
+              <span class="w-unit">kg</span>
+            </div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Descanso 90 seg<div class="rest-dot"></div></div>
+
+        <div class="ex-card" data-min="7">
+          <div class="ex-left">
+            <div class="ex-name">Skater Jumps (saltos laterales)</div>
+            <div class="ex-note">Pliometría lateral, transfiere directo al cambio de dirección y agilidad en cancha. Salto lateral explosivo, aterriza en una pierna y absorbe (frenado). Controla el aterrizaje, no rebotes sin control.</div>
+            <div class="ex-tags"><span class="ex-tag tag-power">Potencia</span><span class="ex-tag tag-power">Lateral</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">3 × 8 c/lado</div>
+            <div style="font-size:12px;color:var(--muted)">Sin peso · Explosivo</div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Descanso 90 seg<div class="rest-dot"></div></div>
+      </div>
+    </div>
+
+    <!-- HIPERTROFIA PULL -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Bloque 2 · Hipertrofia Espalda</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="exercise-grid">
+        <div class="ex-card" data-min="10">
+          <div class="ex-left">
+            <div class="ex-name">Dominadas (Pull-ups)</div>
+            <div class="ex-note">Dorsal ancho y bícep. Peso cuerpo o lastrado si ya haces 10+ fácil. Baja lento 3 seg.</div>
+            <div class="ex-tags"><span class="ex-tag tag-hyp">Hipertrofia</span><span class="ex-tag tag-power">Fuerza</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">4 × máx reps</div>
+            <div class="weight-control">
+              <button class="w-btn" onclick="changeWeight(this,-5)">−</button>
+              <span class="w-val">0</span>
+              <button class="w-btn" onclick="changeWeight(this,5)">+</button>
+              <span class="w-unit">kg extra</span>
+            </div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Descanso 2 min<div class="rest-dot"></div></div>
+
+        <div class="ex-card" data-min="9">
+          <div class="ex-left">
+            <div class="ex-name">Remo con Barra (Pendlay o Barbell Row)</div>
+            <div class="ex-note">Espalda media y dorsal. Torso casi paralelo al piso. Jala hacia el ombligo, no al pecho.</div>
+            <div class="ex-tags"><span class="ex-tag tag-hyp">Hipertrofia</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">4 × 8 reps</div>
+            <div class="weight-control">
+              <button class="w-btn" onclick="changeWeight(this,-5)">−</button>
+              <span class="w-val">70</span>
+              <button class="w-btn" onclick="changeWeight(this,5)">+</button>
+              <span class="w-unit">kg</span>
+            </div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Descanso 90 seg<div class="rest-dot"></div></div>
+
+        <div class="ex-card" data-min="6">
+          <div class="ex-left">
+            <div class="ex-name">Face Pull (cable a la cara)</div>
+            <div class="ex-note">Salud del manguito rotador. Imprescindible para futbolistas. Codo a la altura del hombro, jala hacia la cara.</div>
+            <div class="ex-tags"><span class="ex-tag tag-hyp">Hipertrofia</span><span class="ex-tag tag-mob">Movilidad</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">3 × 15 reps</div>
+            <div class="weight-control">
+              <button class="w-btn" onclick="changeWeight(this,-5)">−</button>
+              <span class="w-val">20</span>
+              <button class="w-btn" onclick="changeWeight(this,5)">+</button>
+              <span class="w-unit">kg</span>
+            </div>
+          </div>
+        </div>
+        <div class="rest-row"><div class="rest-dot"></div>Descanso 75 seg<div class="rest-dot"></div></div>
+
+        <div class="ex-card" data-min="6">
+          <div class="ex-left">
+            <div class="ex-name">Curl de Bíceps con Barra EZ</div>
+            <div class="ex-note">No balancees el torso. Excéntrico 3 seg. Supina la muñeca al subir.</div>
+            <div class="ex-tags"><span class="ex-tag tag-hyp">Hipertrofia</span></div>
+          </div>
+          <div class="ex-right">
+            <div class="sets-reps">3 × 12 reps</div>
+            <div class="weight-control">
+              <button class="w-btn" onclick="changeWeight(this,-5)">−</button>
+              <span class="w-val">35</span>
+              <button class="w-btn" onclick="changeWeight(this,5)">+</button>
+              <span class="w-unit">kg</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOVILIDAD FINAL -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Cierre · Movilidad Total · 8 min</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="mob-card">
+        <div class="mob-header" onclick="toggleMob(this)">
+          <span class="mob-icon">🧘</span>
+          <span class="mob-title">Elongación Post-Sesión Día 3</span>
+          <span class="mob-toggle">▾</span>
+        </div>
+        <div class="mob-body">
+          <ul class="mob-list">
+            <li>Lat stretch en rack (agarra la barra, hunde las caderas) — 45 seg cada lado</li>
+            <li>Estiramiento de espalda baja con rodillas al pecho — 45 seg</li>
+            <li>Thread the needle (rotación torácica en suelo) — 10 cada lado</li>
+            <li>Hip flexor stretch estocada — 60 seg cada lado</li>
+            <li>Standing quad stretch balanceado — 30 seg cada lado</li>
+            <li>Foam roller dorsal completo — 2 min</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">Notas de sesión</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="notes-box">
+        <textarea class="notes-textarea" placeholder="Anota cómo te sentiste, pesos usados, lo que quieres mejorar..."></textarea>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // STATS + BMI
+  let userHeight = 184; // cm
+  let userWeight = 80;
+  let userFat = 10;
+
+  function changeStat(type, delta) {
+    if (type === 'weight') {
+      userWeight = Math.max(40, userWeight + delta);
+      document.getElementById('statWeight').textContent = userWeight % 1 === 0 ? userWeight : userWeight.toFixed(1);
+    } else if (type === 'fat') {
+      userFat = Math.max(3, Math.min(50, userFat + delta));
+      document.getElementById('statFat').textContent = userFat % 1 === 0 ? userFat : userFat.toFixed(1);
+    } else if (type === 'height') {
+      userHeight = Math.max(120, Math.min(230, userHeight + delta));
+      document.getElementById('statHeight').textContent = userHeight;
+    }
+    updateBmi();
+    saveState();
+  }
+
+  function updateBmi() {
+    const hM = userHeight / 100;
+    const bmi = userWeight / (hM * hM);
+    document.getElementById('statBmi').textContent = bmi.toFixed(1);
+    let label;
+    if (bmi < 18.5) label = 'IMC · Bajo';
+    else if (bmi < 25) label = 'IMC · Normal';
+    else if (bmi < 30) label = 'IMC · Sobrepeso';
+    else label = 'IMC · Obesidad';
+    document.getElementById('bmiLabel').textContent = label;
+  }
+  updateBmi();
+
+  // TAB SWITCHING
+  const DAY_COLORS = {
+    1: ['#e5ff3d', 'rgba(229,255,61,0.12)'],
+    2: ['#2dd4ff', 'rgba(45,212,255,0.12)'],
+    3: ['#ff5277', 'rgba(255,82,119,0.12)']
+  };
+
+  function showDay(d) {
+    document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('day' + d).classList.add('active');
+    document.querySelector(`.tab-btn[data-day="${d}"]`).classList.add('active');
+    // recolor global timer to match the active day
+    const timer = document.querySelector('.timer-bar');
+    if (timer) {
+      timer.style.setProperty('--accent', DAY_COLORS[d][0]);
+      timer.style.setProperty('--accent-soft', DAY_COLORS[d][1]);
+    }
+  }
+  showDay(1);
+
+  // WEIGHT CONTROLS
+  function changeWeight(btn, delta) {
+    const display = btn.parentElement.querySelector('.w-val');
+    let val = parseFloat(display.textContent) + delta;
+    val = Math.max(0, val);
+    display.textContent = val % 1 === 0 ? val : val.toFixed(1);
+    saveState();
+  }
+
+  // MOBILITY ACCORDION
+  function toggleMob(header) {
+    const body = header.nextElementSibling;
+    const toggle = header.querySelector('.mob-toggle');
+    body.classList.toggle('open');
+    toggle.classList.toggle('open');
+  }
+
+  // TIMER
+  let timerInterval = null;
+  let timerSeconds = 0;
+  let running = false;
+
+  function updateDisplay() {
+    const m = Math.floor(timerSeconds / 60);
+    const s = timerSeconds % 60;
+    document.getElementById('timerDisplay').textContent = m + ':' + String(s).padStart(2, '0');
+  }
+
+  function startTimer(secs) {
+    clearInterval(timerInterval);
+    timerSeconds = secs;
+    updateDisplay();
+    running = true;
+    timerInterval = setInterval(() => {
+      if (timerSeconds <= 0) {
+        clearInterval(timerInterval);
+        document.getElementById('timerDisplay').textContent = '✓ Listo';
+        running = false;
+        // Vibrate if supported
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        return;
+      }
+      timerSeconds--;
+      updateDisplay();
+    }, 1000);
+  }
+
+  function pauseTimer() {
+    if (running) {
+      clearInterval(timerInterval);
+      running = false;
+    } else if (timerSeconds > 0) {
+      running = true;
+      timerInterval = setInterval(() => {
+        if (timerSeconds <= 0) {
+          clearInterval(timerInterval);
+          document.getElementById('timerDisplay').textContent = '✓ Listo';
+          running = false;
+          return;
+        }
+        timerSeconds--;
+        updateDisplay();
+      }, 1000);
+    }
+  }
+
+  function resetTimer() {
+    clearInterval(timerInterval);
+    running = false;
+    timerSeconds = 0;
+    updateDisplay();
+  }
+
+  // EXERCISE COMPLETION (click card to mark done)
+  document.querySelectorAll('.ex-card').forEach(card => {
+    card.addEventListener('click', function(e) {
+      if (e.target.closest('.weight-control')) return;
+      this.classList.toggle('done');
+      updateProgress();
+      saveState();
+    });
+  });
+
+  // Add done styles
+  const style = document.createElement('style');
+  style.textContent = `
+    .ex-card.done {
+      opacity: 0.55;
+      border-left-color: var(--accent) !important;
+      background: linear-gradient(180deg, var(--accent-soft), var(--card)) !important;
+    }
+    .ex-card.done .ex-name {
+      text-decoration: line-through;
+      text-decoration-color: var(--accent);
+    }
+    .ex-card.done .ex-name::after {
+      content: ' \\2713';
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 900;
+    }
+  `;
+  document.head.appendChild(style);
+
+  function updateProgress() {
+    for (let d = 1; d <= 3; d++) {
+      const panel = document.getElementById('day' + d);
+      const all = panel.querySelectorAll('.ex-card');
+      let totalMin = 0, doneMin = 0;
+      all.forEach(c => {
+        const m = parseFloat(c.dataset.min) || 0;
+        totalMin += m;
+        if (c.classList.contains('done')) doneMin += m;
+      });
+      const pct = totalMin ? Math.round((doneMin / totalMin) * 100) : 0;
+      document.getElementById('prog' + d).style.width = pct + '%';
+      document.getElementById('pct' + d).textContent = pct + '%';
+    }
+  }
+
+  // ---- GUARDADO AUTOMÁTICO (localStorage) ----
+  function saveState() {
+    try {
+      const data = {
+        weights: [...document.querySelectorAll('.w-val')].map(e => e.textContent),
+        done: [...document.querySelectorAll('.ex-card')].map(c => c.classList.contains('done')),
+        notes: [...document.querySelectorAll('.notes-textarea')].map(t => t.value),
+        stats: { userWeight, userFat, userHeight }
+      };
+      localStorage.setItem('ffa_rutina', JSON.stringify(data));
+    } catch (e) { /* almacenamiento no disponible */ }
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem('ffa_rutina');
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      if (d.weights) {
+        const els = document.querySelectorAll('.w-val');
+        d.weights.forEach((v, i) => { if (els[i]) els[i].textContent = v; });
+      }
+      if (d.done) {
+        const cards = document.querySelectorAll('.ex-card');
+        d.done.forEach((b, i) => { if (cards[i] && b) cards[i].classList.add('done'); });
+      }
+      if (d.notes) {
+        const nt = document.querySelectorAll('.notes-textarea');
+        d.notes.forEach((v, i) => { if (nt[i]) nt[i].value = v; });
+      }
+      if (d.stats) {
+        if (typeof d.stats.userWeight === 'number') {
+          userWeight = d.stats.userWeight;
+          document.getElementById('statWeight').textContent = userWeight % 1 === 0 ? userWeight : userWeight.toFixed(1);
+        }
+        if (typeof d.stats.userFat === 'number') {
+          userFat = d.stats.userFat;
+          document.getElementById('statFat').textContent = userFat % 1 === 0 ? userFat : userFat.toFixed(1);
+        }
+        if (typeof d.stats.userHeight === 'number') {
+          userHeight = d.stats.userHeight;
+          document.getElementById('statHeight').textContent = userHeight;
+        }
+        updateBmi();
+      }
+      updateProgress();
+    } catch (e) { /* datos corruptos, se ignoran */ }
+  }
+
+  const DEFAULT_WEIGHTS = [...document.querySelectorAll('.w-val')].map(e => e.textContent);
+  let resetArmed = false;
+  let resetTimerHandle = null;
+
+  function resetState(btn) {
+    if (!resetArmed) {
+      resetArmed = true;
+      if (btn) { btn.textContent = '¿Seguro?'; btn.style.color = 'var(--day3)'; btn.style.borderColor = 'var(--day3)'; }
+      clearTimeout(resetTimerHandle);
+      resetTimerHandle = setTimeout(() => {
+        resetArmed = false;
+        if (btn) { btn.textContent = '↺ Completados'; btn.style.color = ''; btn.style.borderColor = 'rgba(255,82,119,0.4)'; }
+      }, 4000);
+      return;
+    }
+    // confirmado: desmarcar solo los ejercicios completados (los pesos y notas se conservan)
+    resetArmed = false;
+    clearTimeout(resetTimerHandle);
+    document.querySelectorAll('.ex-card.done').forEach(c => c.classList.remove('done'));
+    updateProgress();
+    saveState();
+    if (btn) { btn.textContent = '✓ Listo'; btn.style.color = ''; btn.style.borderColor = 'rgba(255,82,119,0.4)'; setTimeout(() => { btn.textContent = '↺ Completados'; }, 1500); }
+  }
+
+  // Guardar notas mientras escribes
+  document.querySelectorAll('.notes-textarea').forEach(t => {
+    t.addEventListener('input', saveState);
+  });
+
+  // Cargar datos guardados al abrir
+  loadState();
+
+</script>
+
+</body>
+</html>
